@@ -1,0 +1,45 @@
+<script>
+    $(document).ready(function() {
+        let activeTabId = ''; // Variable to store active tab id
+        let originalTabContent = ''; // Variable to store original tab content
+
+        // When a buy button is clicked
+        $(document).on('click', '.buy-button', function() {
+            // Get the data attributes from the clicked button
+            const priceId = $(this).data('price-id');
+            const tabId = $(this).data('tab-id'); // Get tab ID from data attribute
+
+            // Store the original content of the active tab
+            originalTabContent = $(tabId).html();
+
+            // For demonstration, let's assume you have a variable called 'modalData' containing the form content
+            // You should replace this with your actual logic to fetch data based on priceId
+            const modalContent = `
+            <form action="{{ route('testPost') }}" method="POST">
+                @csrf
+                <input type="text" hidden name="price_id" value="${priceId}">
+                <input type="text" hidden name="customer_id" value="{{ auth()->user()->id }}">
+                <!-- Add your form fields and elements here -->
+                <div class="col-md-6 grid-margin">
+                    <!-- Your form fields go here -->
+                </div>
+                <div class="row">
+                    <!-- More form fields go here -->
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Book</button>
+                    <button type="button" class="btn btn-secondary">Clear</button>
+                </div>
+            </form>
+        `;
+
+            // Set the modal body content
+            $('.modal-body').html(modalContent);
+
+            // Show the modal
+            $('#exampleModalLong').modal('show');
+        });
+
+        // Rest of your JavaScript code...
+    });
+</script>

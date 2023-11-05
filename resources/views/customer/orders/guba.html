@@ -1,0 +1,204 @@
+@extends('customer.dashboard')
+
+
+
+@section('customer')
+
+<div class="page-content">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="custom-tab-1">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        @foreach ($byCategory as $category)
+                        <li class="nav-item">
+                            <a class="nav-link @if ($loop->first) active @endif" id="{{ 'tab-' . $category->id }}" data-bs-toggle="tab" href="#{{ 'content-' . $category->id }}" role="tab" aria-controls="{{ 'content-' . $category->id }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">{{ $category->name }}</a>
+                        </li>
+                        @endforeach
+
+                        <li class="nav-item ms-auto">
+                            <div class="dropdown">
+                                <button type="button" class="btn btn-primary light sharp" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <svg width="18px" height="18px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <rect x="0" y="0" width="24" height="24"></rect>
+                                            <circle fill="#000000" cx="5" cy="12" r="2"></circle>
+                                            <circle fill="#000000" cx="12" cy="12" r="2"></circle>
+                                            <circle fill="#000000" cx="19" cy="12" r="2"></circle>
+                                        </g>
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end" style="margin: 0px;">
+                                    <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2" data-bs-toggle="modal" data-bs-target="#modalAddPack">
+                                        Add Package
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <div class="tab-content col-lg-10 col-xl-6" id="myTabContent">
+                @foreach ($byCategory as $category)
+                <div class="tab-pane fade @if ($loop->first) show active @endif" id="{{ 'content-' . $category->id }}" role="tabpanel" aria-labelledby="{{ 'tab-' . $category->id }}">
+                    @foreach ($byPrice as $price)
+                    @if ($price->category_id == $category->id)
+
+                    <div class="cards" style="background-color: #fff; padding: 15px; border-radius: 10px; margin-top: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                        <div class="menu-product d-flex">
+                            <img src="{{asset('../assets/images/product/pizz1.jpg')}}">
+                            <div class="content-detail-wrap">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h4>{{ $price->price }}</h4>
+                                        <span>Lots of cheese</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-primary light sharp" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <svg width="18px" height="18px" viewBox="0 0 24 24" version="1.1">
+                                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                        <rect x="0" y="0" width="24" height="24"></rect>
+                                                        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
+                                                        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
+                                                        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
+                                                    </g>
+                                                </svg>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-end" style="margin: 0px;">
+                                                <a class="dropdown-item" href="#">Edit</a>
+                                                <a class="dropdown-item" href="#">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-0"><span class="fs-14 me-2">start From</span>$</h5>
+                                        <span class="text-danger">Customization available</span>
+                                    </div>
+                                    <div>
+                                        <a class="nav-link {{ $loop->iteration == 2 ? 'active' : '' }}" id="{{ 'tab-' . $price->id }}" data-bs-toggle="modal" data-bs-target="#exampleModalLong" role="tab" aria-controls="{{ 'content-' . $price->id }}" aria-selected="{{ $loop->iteration == 2 ? 'true' : 'false' }}">{{ $price->price }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @endforeach
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================MODAL View================================ -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content border border-top-0 p-3" id="myTabContent">
+
+                    @foreach ($byPrice as $price)
+                    @if ($price->category_id == 2)
+                    <div class="tab-pane fade {{ $loop->iteration == 2 ? 'show active' : '' }}" id="{{ 'content-' . $price->id }}" role="tabpanel" aria-labelledby="{{ 'tab-' . $price->id }}">
+                        <form action="{{ route('testPost') }}" method="POST">
+                            @csrf
+                            <input type="text" hidden name="price_id" value="{{ $price->id }}">
+                            <input type="text" hidden name="customer_id" value="{{ auth()->user()->id }}">
+                            <div class="col-md-6 grid-margin">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            @php
+                                            $previousLine = null;
+                                            @endphp
+                                            @foreach ($dataPack as $pack)
+                                            @if ($pack->price_id == $price->id)
+                                            @if ($pack->line != $previousLine)
+                                            @if ($previousLine !== null)
+                                        </ul>
+                                    </div>
+                                </div> <br> <!-- Close the previous card -->
+                                <div class="card"> <!-- Open a new card for the new line -->
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            @endif
+                                            <li class="list-group-item">
+                                                <input type="radio" value="{{ $pack->menu }}" style="margin-right: 10px" class="form-check-input" name="radioLine_{{ $pack->line }}" id="radioDefault_{{ $pack->line }}">
+                                                {{ $pack->menu }}
+                                            </li>
+                                            @php
+                                            $previousLine = $pack->line;
+                                            @endphp
+                                            @else
+                                            <li class="list-group-item">
+                                                <input type="radio" value="{{ $pack->menu }}" style="margin-right: 10px" class="form-check-input" name="radioLine_{{ $pack->line }}" id="radioDefault_{{ $pack->line }}">
+                                                {{ $pack->menu }}
+                                            </li>
+                                            @endif
+                                            @endif
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div> <!-- Close the last card -->
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 grid-margin stretch-card">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">DATE</h6>
+                                            <div class="input-group flatpickr" id="flatpickr-date">
+                                                <input type="date" name="date" class="form-control" placeholder="Select date" data-input>
+                                                <span class="input-group-text input-group-addon" data-toggle><i data-feather="calendar"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 grid-margin stretch-card">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">TIME</h6>
+                                            <div class="input-group flatpickr" id="flatpickr-time">
+                                                <input type="time" name="time" class="form-control" placeholder="Select time" data-input>
+                                                <span class="input-group-text input-group-addon" data-toggle><i data-feather="clock"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Book</button>
+                                <button type="button" class="btn btn-secondary">Clear</button>
+                            </div>
+                        </form>
+                    </div>
+                    @endif
+                    @endforeach
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===============MODAL END===================== -->
+
+@endsection
+
+<!-- Add this to your HTML file inside the <head> section -->
+<script src="{{asset('../assets/jquery/jquery.js')}}"></script>

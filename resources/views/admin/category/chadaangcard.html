@@ -1,0 +1,67 @@
+@extends('admin.dashboard')
+
+@section('admin')
+<div class="container position-relative mt-5">
+    <div class="row">
+        <div class="col-md-6 mx-auto mb-4"> <!-- Adjust the column size and use mx-auto to center it horizontally -->
+            <div class="package-container p-4 rounded shadow-lg">
+                <div class="package-header bg-orange text-white rounded-top text-center py-3">
+                    {{ $packages->first()->price_name }}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th style="width: 30%; text-align: right;">Price:</th>
+                                <td style="width: 20%; font-weight: bold; color: #FF5733;">${{ $packages->first()->price
+                                    }}</td>
+                                <th style="width: 30%; text-align: right;">Description:</th>
+                                <td style="width: 20%; color: #FFA500;">{{ $packages->first()->price_description }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 text-center mb-4">
+            <a href="{{ route('category.index') }}" class="btn btn-warning text-white"><i class="fas fa-arrow-left"></i>
+                Back</a>
+        </div>
+
+        <div class="col-md-12">
+            <div class="menu-items-container rounded shadow-lg p-4">
+                @foreach($groupedPackages as $variant => $items)
+                <div class="variant-container mt-4">
+                    <h4 class="variant-label text-center mb-3">{{ $variant }}</h4>
+                    <div class="row justify-content-center">
+                        @foreach($items as $menuItem)
+                        <div class="col-md-3 mb-3">
+                            <div class="menu-item-container"
+                                style="box-shadow: 0 4px 8px rgba(255, 140, 0, 0.2); width: 180px; height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #FFF; border-radius: 15px; padding: 20px;">
+                                <div
+                                    style="border: 3px solid #FF8C00; border-radius: 50%; width: 90px; height: 90px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(255, 140, 0, 0.2);">
+                                    <img src="{{ asset('../upload/admin_images/' . $menuItem->menu_image) }}"
+                                        alt="Menu Image"
+                                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                </div>
+                                <h5 class="menu-title text-orange font-weight-bold mb-3">{{ $menuItem->menu }}</h5>
+                                <p class="menu-description text-muted mb-3">{{ $menuItem->description }}</p>
+                                <div class="action-icons">
+                                    <span class="edit-icon text-orange mr-3" title="Edit" style="cursor: pointer;"><i
+                                            class="far fa-edit"></i></span>
+                                    <span class="delete-icon text-orange" title="Delete" style="cursor: pointer;"><i
+                                            class="far fa-trash-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+    </div>
+</div>
+@endsection

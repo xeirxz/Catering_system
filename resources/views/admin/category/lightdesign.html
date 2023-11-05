@@ -1,0 +1,48 @@
+@extends('admin.dashboard')
+@section('admin')
+
+<div class="container position-relative">
+    <div class="row">
+        <div class="package-container mb-4">
+            <div class="package-header d-flex justify-content-between align-items-center">
+                <div>
+
+                    <h2 style="font-size: 22px; color: #FF5733;">{{ $packages->first()->price_name }}</h2>
+                    <h3 style="font-size: 18px; color: #FF8C00;">Price: ${{ $packages->first()->price }}</h3>
+                    <p style="font-size: 14px; color: #FFA500;">{{ $packages->first()->price_description }}</p>
+                </div>
+                <a href="{{ route('category.index') }}" class="back-button" style="font-size: 16px; color: #FF5733; text-decoration: none; position: absolute; top: 10px; right: 10px;"><i class="fas fa-arrow-left"></i> Back</a>
+            </div>
+
+            @foreach($groupedPackages as $variant => $items)
+            <div class="variant-container mt-3">
+                <div class="variant-label" style="font-size: 16px; font-weight: bold; color: #333;">Variant: {{ $variant }}</div>
+                <div class="row">
+                    @foreach($items as $menuItem)
+                    <div class="col-md-2">
+                        <div class="card" style="width: 100%; height: 220px; border: 1px solid #FF8C00; border-radius: 15px; box-shadow: 0 8px 16px rgba(255, 140, 0, 0.2);">
+                            <img class="card-img-top" src="{{ asset('../upload/admin_images/' . $menuItem->menu_image) }}" alt="Menu Image" style="width: 100%; height: 140px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                            <div class="card-body" style="padding: 15px;">
+                                <h5 class="card-title" style="font-size: 14px; margin-bottom: 10px; color: #FF5733; font-weight: bold;">{{ $menuItem->menu }}</h5>
+                                <p class="card-text" style="font-size: 12px; margin-bottom: 15px; color: #333;">{{ $menuItem->description }}</p>
+                                <!-- Additional details -->
+
+                                <div class="action-icons text-center">
+                                    <span class="edit-icon mr-3" title="Edit" style="font-size: 20px; color: #FF8C00; cursor: pointer;"><i class="far fa-edit"></i></span>
+                                    <span class="delete-icon" title="Delete" style="font-size: 20px; color: #FF5733; cursor: pointer;"><i class="far fa-trash-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    <div class="position-relative" style="height: 0;">
+        <a href="{{ route('category.index') }}" class="back-button" style="font-size: 16px; color: #FF5733; text-decoration: none; position: absolute; top: 20px; right: 20px;"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+</div>
+
+@endsection

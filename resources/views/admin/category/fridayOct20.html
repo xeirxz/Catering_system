@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+
+        $(document).ready(function () {
+            // Set CSRF token for AJAX requests
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $('body').on('click', '#show-package', function () {
+                var priceId = $(this).data('price-id');
+                $.get('/package/' + priceId, function (data) {
+                    // Populate the modal with package data
+                    $('#package-title').text(data.price_name);
+                    var price = data[0].price;
+
+                    // Group packages by variant
+                    var groupedPackages = groupBy(data, 'variant');
+                    var modalBodyHtml = '';
+
+                    // Display the price above the grouped packages' titles
+                    modalBodyHtml += '<h3>Price: $' + price + '</h3>'; // Price display
+
+                    // Loop through the grouped packages and create content for each variant
+                    Object.keys(groupedPackages).forEach(function (variant) {
+                        modalBodyHtml += '<h4>' + variant + '</h4>'; // Variant title
+                        groupedPackages[variant].forEach(function (menuItem) {
+                            var menuText = menuItem.menu;
+                            var menuId = menuItem.id;
+                            modalBodyHtml += '<div class="package-content" data-variant-id="' + menuItem.variant_id + '" data-menu-id="' + menuId + '" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">';
+                            modalBodyHtml += '<span class="menu-text">' + menuText + '</span>';
+                            modalBodyHtml += '<span class="edit-icon" style="margin-left: 10px; cursor: pointer;"><i class="fas fa-edit" style="color: #007bff;"></i></span>';
+                            modalBodyHtml += '<span class="delete-icon" style="margin-left: 10px; cursor: pointer;"><i class="fas fa-trash-alt" style="color: #dc3545;"></i></span>';
+                            modalBodyHtml += '</div>';
+                        });
+                    });
+
+                    // Populate modal content
+                    $('#modal-body-content').html(modalBodyHtml);
+
+                    // Enable editing when the edit icon is clicked
+                    $('body').on('click', '.edit-icon', function () {
+                        // ... (previous edit logic remains unchanged)
+                    });
+
+                    // Delete menu item when the delete icon is clicked
+                    $('body').on('click', '.delete-icon', function () {
+                        var menuId = $(this).closest('.package-content').data('menu-id');
+                        var variantId = $(this).closest('.package-content').data('variant-id');
+                        var deletedItem = $(this).closest('.package-content');
+
+                        // Send a DELETE request to the server using AJAX
+                        $.ajax({
+                            url: '/package/delete/' + menuId,
+                            type: 'DELETE',
+                            success: function (response) {
+                                console.log('Menu item deleted successfully:', response);
+                                // Handle success response if necessary
+                                Swal.fire('Success!', 'Menu item deleted successfully.', 'success');
+
+                                // Remove the deleted menu item from the modal
+                                deletedItem.remove();
+
+                                // Check if the variant is empty after deleting a menu item
+                                var variantContainers = $('.package-content[data-variant-id="' + variantId + '"]');
+                                if (variantContainers.length === 0) {
+                                    // Variant is empty, remove the variant title as well
+                                    $('h4:contains(' + variantId + ')').remove();
+
+                                    // Variant is empty, send DELETE request to delete the empty variant
+                                    // Variant is empty, send DELETE request to delete the empty variant
+                                    $.ajax({
+                                        url: '/package/delete-variant/' + variantId,
+                                        type: 'DELETE',
+                                        success: function (response) {
+                                            console.log('Variant deleted successfully:', response);
+                                            // Handle success response if necessary
+                                        },
+                                        error: function (error) {
+                                            console.error('Error deleting variant:', error);
+                                            // Handle error response if necessary
+                                        }
+                                    });
+                                }
+
+                                // Check if there are no more items in the modal, then close it
+                                if ($('#modal-body-content').children().length === 0) {
+                                    $('#packageModalLong').modal('hide');
+                                }
+                            },
+                            error: function (error) {
+                                console.error('Error deleting menu item:', error);
+                                // Handle error response if necessary
+                                Swal.fire('Error!', 'Failed to delete menu item. Please try again.', 'error');
+                            }
+                        });
+                    });
+
+                    // Show the modal with the populated content
+                    $('#packageModalLong').modal('show');
+                });
+
+                // Helper function to group data by a specific key
+                function groupBy(data, key) {
+                    return data.reduce(function (acc, item) {
+                        var groupKey = item[key];
+                        acc[groupKey] = acc[groupKey] || [];
+                        acc[groupKey].push(item);
+                        return acc;
+                    }, {});
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
